@@ -2,7 +2,8 @@
 
 import argparse
 import json
-from lib.find_match import find_match
+from lib.inverted_index import InvertedIndex
+from lib.cli_commands import build_command, search_command
 
 
 def main() -> None:
@@ -12,25 +13,17 @@ def main() -> None:
     search_parser = subparsers.add_parser("search", help="Search movies using BM25")
     search_parser.add_argument("query", type=str, help="Search query")
 
-    args = parser.parse_args()
-    with open("./data/movies.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-    movies = data["movies"]
+    subparsers.add_parser("build", help="Build the inverted index and save it to the disk")
 
-    res = find_match(args.query, [movie["title"] for movie in movies])
-    print(res)
+    args = parser.parse_args()
 
     match args.command:
         case "search":
-            # print the search query here
-            print(f"Searching for: {args.query}")
-            for x in range(min(len(res) -1 ,5)):
-                print(f"{x + 1}. {res[x]}")
+            search_command(args.query)
+        case "build":
+            build_command()
         case _:
             parser.print_help()
-
-
-
 
 if __name__ == "__main__":
     main()
