@@ -11,8 +11,17 @@ def build_command() -> None:
 
 def search_command(text) -> list[dict]:
     print(f"Searching for: {text}")
-    res = find_match(text)
-    for idx, item in enumerate(res):
-        print(f"{idx + 1}. {item["title"]}")
+    
+    idx = InvertedIndex()
+    try:
+        idx.load()
+    except FileNotFoundError:
+        print("Error: Index not found. Please run 'build' first.")
+        return []
+
+    res = find_match(text, idx)
+    
+    for item in res:
+        print(f"{item['id']}. {item['title']}")
 
     return res
